@@ -40,8 +40,9 @@ const updateOrderStatus = async (
 };
 
 const getAnalytics = async () => {
-  const last7Days = new Date();
-  last7Days.setDate(last7Days.getDate() - 7);
+  const now = new Date();
+  // Calculate last 7 days in Bangladesh timezone (UTC+6)
+  const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   const result = await Order.aggregate([
     {
@@ -52,7 +53,11 @@ const getAnalytics = async () => {
     {
       $group: {
         _id: {
-          $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+          $dateToString: {
+            format: '%Y-%m-%d',
+            date: '$createdAt',
+            timezone: 'Asia/Dhaka',
+          },
         },
         orders: { $sum: 1 },
         revenue: { $sum: '$totalPrice' },

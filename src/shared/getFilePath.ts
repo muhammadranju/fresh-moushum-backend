@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type IFolderName = 'image' | 'media' | 'doc';
 
-//single file
+// Single file path extractor
 export const getSingleFilePath = (files: any, folderName: IFolderName) => {
   const fileField = files && files[folderName];
   if (fileField && Array.isArray(fileField) && fileField.length > 0) {
     return `/${folderName}/${fileField[0].filename}`;
   }
-
   return undefined;
 };
 
-//multiple files
+// Multiple file paths extractor
 export const getMultipleFilesPath = (files: any, folderName: IFolderName) => {
   const folderFiles = files && files[folderName];
   if (folderFiles) {
@@ -19,6 +18,5 @@ export const getMultipleFilesPath = (files: any, folderName: IFolderName) => {
       return folderFiles.map((file: any) => `/${folderName}/${file.filename}`);
     }
   }
-
   return undefined;
 };

@@ -1,42 +1,30 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
 import path from 'path';
+import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, label, printf } = format;
 
-const myFormat = printf(
-  ({
-    level,
-    message,
-    label,
-    timestamp,
-  }: {
-    level: string;
-    message: string;
-    label: string;
-    timestamp: Date;
-  }) => {
-    const date = new Date(timestamp);
-    const hour = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
+const { combine, timestamp, label, printf } = winston.format;
 
-    return `${date.toDateString()} ${hour}:${minutes}:${seconds} [${label}] ${level}: ${message}`;
-  }
-);
+const myFormat = printf((info: any) => {
+  const { level, message, label, timestamp } = info;
+  const date = new Date(timestamp);
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
 
-const logger = createLogger({
+  return `${date.toDateString()} ${hour}:${minutes}:${seconds} [${label}] ${level}: ${message}`;
+});
+
+const logger = winston.createLogger({
   level: 'info',
   format: combine(label({ label: 'SERVER-NAME' }), timestamp(), myFormat),
   transports: [
-    new transports.Console(),
+    new winston.transports.Console(),
     new DailyRotateFile({
       filename: path.join(
         process.cwd(),
         'winston',
         'success',
-        '%DATE%-success.log'
+        '%DATE%-success.log',
       ),
       datePattern: 'DD-MM-YYYY-HH',
       maxSize: '20m',
@@ -45,17 +33,17 @@ const logger = createLogger({
   ],
 });
 
-const errorLogger = createLogger({
+const errorLogger = winston.createLogger({
   level: 'error',
   format: combine(label({ label: 'SERVER-NAME' }), timestamp(), myFormat),
   transports: [
-    new transports.Console(),
+    new winston.transports.Console(),
     new DailyRotateFile({
       filename: path.join(
         process.cwd(),
         'winston',
         'error',
-        '%DATE%-error.log'
+        '%DATE%-error.log',
       ),
       datePattern: 'DD-MM-YYYY-HH',
       maxSize: '20m',

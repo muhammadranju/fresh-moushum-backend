@@ -1,3 +1,4 @@
+import compression from 'compression';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
@@ -5,46 +6,49 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
 import { Morgan } from './shared/morgen';
 import sendResponse from './shared/sendResponse';
+
 const app = express();
 
-//morgan
+// Logging
 app.use(Morgan.successHandler);
 app.use(Morgan.errorHandler);
 
-//body parser
+// Compression for optimized response payloads
+app.use(compression());
+
+// Body parser & CORS
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//file retrieve
+// Static file serving
 app.use(express.static('uploads'));
 
-//router
+// API routes
 app.use('/api/v1', router);
 
-//live response
-app.get('/', (req: Request, res: Response) => {
-  const date = new Date(Date.now());
+// Health check
+app.get('/', (_req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Beep-beep! The server is alive and kicking.',
-    data: date,
+    message: 'Server is running',
+    data: { timestamp: new Date().toISOString(), status: 'healthy' },
   });
 });
 
-//global error handle
+// Global error handler
 app.use(globalErrorHandler);
 
-//handle not found route;
-app.use((req, res) => {
+// 404 handler
+app.use((req: Request, res: Response) => {
   res.status(StatusCodes.NOT_FOUND).json({
     success: false,
     message: 'Not found',
     errorMessages: [
       {
         path: req.originalUrl,
-        message: "API DOESN'T EXIST",
+        message: "API doesn't exist",
       },
     ],
   });

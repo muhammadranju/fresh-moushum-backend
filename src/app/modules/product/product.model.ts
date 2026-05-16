@@ -17,6 +17,7 @@ const productSchema = new Schema<IProduct>(
     },
     image: { type: String, required: true },
     orderIndex: { type: Number, default: 0 },
+    isVisible: { type: Boolean, default: true },
   },
   {
     timestamps: true,

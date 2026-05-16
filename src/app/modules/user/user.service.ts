@@ -11,14 +11,24 @@ import { User } from './user.model';
 
 const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   //set role
+  // Prepare authentication data
+  const otp = generateOTP();
+  const authentication = {
+    isResetPassword: false,
+    oneTimeCode: otp,
+    expireAt: new Date(Date.now() + 3 * 60000),
+  };
+
+  //set role and auth
   payload.role = USER_ROLES.USER;
+  payload.authentication = authentication;
+
   const createUser = await User.create(payload);
   if (!createUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Failed to create user');
   }
 
   //send email
-  const otp = generateOTP();
   const values = {
     name: createUser.name,
     otp: otp,
@@ -27,21 +37,11 @@ const createUserToDB = async (payload: Partial<IUser>): Promise<IUser> => {
   const createAccountTemplate = emailTemplate.createAccount(values);
   emailHelper.sendEmail(createAccountTemplate);
 
-  //save to DB
-  const authentication = {
-    oneTimeCode: otp,
-    expireAt: new Date(Date.now() + 3 * 60000),
-  };
-  await User.findOneAndUpdate(
-    { _id: createUser._id },
-    { $set: { authentication } }
-  );
-
   return createUser;
 };
 
 const getUserProfileFromDB = async (
-  user: JwtPayload
+  user: JwtPayload,
 ): Promise<Partial<IUser>> => {
   const { id } = user;
   const isExistUser = await User.isExistUserById(id);
@@ -54,7 +54,7 @@ const getUserProfileFromDB = async (
 
 const updateProfileToDB = async (
   user: JwtPayload,
-  payload: Partial<IUser>
+  payload: Partial<IUser>,
 ): Promise<Partial<IUser | null>> => {
   const { id } = user;
   const isExistUser = await User.isExistUserById(id);

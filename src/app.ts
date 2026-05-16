@@ -4,14 +4,9 @@ import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
-import { Morgan } from './shared/morgen';
 import sendResponse from './shared/sendResponse';
 
 const app = express();
-
-// Logging
-app.use(Morgan.successHandler);
-app.use(Morgan.errorHandler);
 
 // Compression for optimized response payloads
 app.use(compression());
@@ -21,8 +16,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static file serving
-app.use(express.static('uploads'));
+// Static file serving with 1 day cache
+app.use(express.static('uploads', { maxAge: '1d' }));
 
 // API routes
 app.use('/api/v1', router);

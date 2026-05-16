@@ -4,12 +4,11 @@ import config from '../../config';
 import ApiError from '../../errors/ApiError';
 import handleValidationError from '../../errors/handleValidationError';
 import handleZodError from '../../errors/handleZodError';
-import { errorLogger } from '../../shared/logger';
 import { IErrorMessage } from '../../types/errors.types';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  // Log errors via the structured logger in all environments
-  errorLogger.error('🚨 globalErrorHandler ~~ ', error);
+  // Log errors via console in all environments
+  console.error('🚨 Global Error Handler:', error);
 
   let statusCode = 500;
   let message = 'Something went wrong';

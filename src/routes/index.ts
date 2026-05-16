@@ -5,6 +5,7 @@ import { ProductRoutes } from '../app/modules/product/product.route';
 import { OrderRoutes } from '../app/modules/order/order.route';
 import { CMSRoutes } from '../app/modules/cms/cms.route';
 import { ReviewRoutes } from '../app/modules/review/review.route';
+import { UploadRoutes } from '../app/modules/upload/upload.route';
 
 const router = express.Router();
 
@@ -32,6 +33,10 @@ const apiRoutes = [
   {
     path: '/review',
     route: ReviewRoutes,
+  },
+  {
+    path: '/upload',
+    route: UploadRoutes,
   },
 ];
 

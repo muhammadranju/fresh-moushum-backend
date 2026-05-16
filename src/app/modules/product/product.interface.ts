@@ -11,6 +11,7 @@ export type IProduct = {
   stockStatus: 'In Stock' | 'Low Stock' | 'Out of Stock';
   image: string;
   orderIndex: number;
+  isVisible: boolean;
 };
 
 export type ProductModel = Model<IProduct, Record<string, unknown>>;

@@ -16,6 +16,11 @@ const orderSchema = new Schema<IOrder>(
       enum: ['Pending', 'Confirmed', 'Delivered', 'Cancelled'],
       default: 'Pending',
     },
+    orderSource: {
+      type: String,
+      enum: ['Website', 'WhatsApp', 'Facebook', 'Phone', 'Offline'],
+      default: 'Website',
+    },
   },
   {
     timestamps: true,

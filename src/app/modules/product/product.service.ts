@@ -12,6 +12,13 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   if (!query.sort) {
     query.sort = defaultSort;
   }
+  
+  if (query.isVisible === 'true') {
+    query.isVisible = { $ne: false };
+  } else if (query.isVisible === 'false') {
+    query.isVisible = false;
+  }
+  
   const productQuery = new QueryBuilder(Product.find(), query)
     .search(['name', 'description'])
     .filter()

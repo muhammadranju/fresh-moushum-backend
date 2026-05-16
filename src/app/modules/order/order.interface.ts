@@ -10,6 +10,7 @@ export type IOrder = {
   totalPrice: number;
   note?: string;
   status: 'Pending' | 'Confirmed' | 'Delivered' | 'Cancelled';
+  orderSource?: 'Website' | 'WhatsApp' | 'Facebook' | 'Phone' | 'Offline';
 };
 
 export type OrderModel = Model<IOrder, Record<string, unknown>>;
